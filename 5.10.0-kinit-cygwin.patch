@@ -1,0 +1,36 @@
+--- origsrc/kinit-5.10.0/src/kdeinit/kinit.cpp	2015-05-03 10:14:51.000000000 -0500
++++ src/kinit-5.10.0/src/kdeinit/kinit.cpp	2015-05-17 16:14:55.928960300 -0500
+@@ -91,6 +91,12 @@ static const char *extra_libs[] = {
+     "libKF5Parts.5.dylib",
+     "libKF5Plasma.5.dylib"
+ };
++#elif defined(Q_OS_CYGWIN)
++static const char *extra_libs[] = {
++    "cygKF5KIOCore-5.dll",
++    "cygKF5Parts-5.dll",
++    "cygKF5Plasma-5.dll"
++};
+ #else
+ //TODO: make sure what libraries we want here...
+ static const char *extra_libs[] = {
+@@ -486,7 +492,11 @@ static pid_t launch(int argc, const char
+     if (_name[0] != '/') {
+         name = _name;
+         lib = QFile::decodeName(name);
++#ifdef Q_OS_CYGWIN
++        libpath = QLatin1String("cygkdeinit5_") + lib;
++#else
+         libpath = QLatin1String("libkdeinit5_") + lib;
++#endif
+         libpath_relative = true;
+         execpath = execpath_avoid_loops(name, envc, envs, avoid_loops);
+     } else {
+@@ -495,7 +505,7 @@ static pid_t launch(int argc, const char
+         name = name.mid(name.lastIndexOf('/') + 1);
+ 
+         // FIXME: this .so extension stuff is very Linux-specific
+-        if (lib.endsWith(QLatin1String(".so"))) {
++        if (lib.endsWith(QLatin1String(".so")) || lib.endsWith(QLatin1String(".dll"))) {
+             libpath = lib;
+         } else {
+             execpath = _name;
