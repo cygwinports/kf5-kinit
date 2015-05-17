@@ -1,5 +1,5 @@
 --- origsrc/kinit-5.10.0/src/kdeinit/kinit.cpp	2015-05-03 10:14:51.000000000 -0500
-+++ src/kinit-5.10.0/src/kdeinit/kinit.cpp	2015-05-17 16:14:55.928960300 -0500
++++ src/kinit-5.10.0/src/kdeinit/kinit.cpp	2015-05-17 17:02:29.631834600 -0500
 @@ -91,6 +91,12 @@ static const char *extra_libs[] = {
      "libKF5Parts.5.dylib",
      "libKF5Plasma.5.dylib"
@@ -18,7 +18,7 @@
          name = _name;
          lib = QFile::decodeName(name);
 +#ifdef Q_OS_CYGWIN
-+        libpath = QLatin1String("cygkdeinit5_") + lib;
++        libpath = QLatin1String("cygkdeinit5_") + lib + QLatin1String(".dll");
 +#else
          libpath = QLatin1String("libkdeinit5_") + lib;
 +#endif
@@ -34,3 +34,27 @@
              libpath = lib;
          } else {
              execpath = _name;
+@@ -507,6 +517,15 @@ static pid_t launch(int argc, const char
+             // the install prefix, although this may not be the case if the user
+             // has overridden them, and so this search is inherently fragile in
+             // the face of unusual installation layouts.
++#ifdef Q_OS_CYGWIN
++            if (lib.contains(QLatin1String(KF5_LIBEXEC_INSTALL_DIR))) {
++                libpath = QString(lib).replace(QLatin1String(KF5_LIBEXEC_INSTALL_DIR),
++                                               QLatin1String("/bin/cygkdeinit5_")) + QLatin1String(".dll");
++            } else if (lib.contains(QLatin1String("/bin/"))) {
++                libpath = QString(lib).replace(QLatin1String("/bin/"),
++                                               QLatin1String("/bin/cygkdeinit5_")) + QLatin1String(".dll");
++            }
++#else
+             if (lib.contains(QLatin1String(KF5_LIBEXEC_INSTALL_DIR))) {
+                 libpath = QString(lib).replace(QLatin1String(KF5_LIBEXEC_INSTALL_DIR),
+                                                QLatin1String(LIB_INSTALL_DIR "/libkdeinit5_")) + QLatin1String(".so");
+@@ -514,6 +533,7 @@ static pid_t launch(int argc, const char
+                 libpath = QString(lib).replace(QLatin1String("/bin/"),
+                                                QLatin1String(LIB_INSTALL_DIR "/libkdeinit5_")) + QLatin1String(".so");
+             }
++#endif
+             // Don't confuse the user with "Could not load libkdeinit5_foo.so" if it doesn't exist
+             if (!QFile::exists(libpath)) {
+                 libpath.clear();
