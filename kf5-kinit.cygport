@@ -1,7 +1,7 @@
 inherit kf5
 
 NAME="kf5-kinit"
-VERSION=5.12.0
+VERSION=5.27.0
 RELEASE=1
 CATEGORY="Libs"
 SUMMARY="KDE 5 process launcher"
@@ -9,4 +9,25 @@ DESCRIPTION="kdeinit is a process launcher somewhat similar to the famous init
 used for booting UNIX. It launches processes by forking and then loading a
 dynamic library which should contain a 'kdemain(...)' function."
 
-PATCH_URI="5.10.0-kinit-cygwin.patch"
+PATCH_URI="5.27.0-kinit-cygwin.patch"
+
+PKG_NAMES="${NAME} ${NAME}-devel"
+kf5_kinit_CONTENTS="
+	usr/bin/cygkdeinit5_klauncher.dll
+	usr/bin/kdeinit5.exe
+	usr/bin/kdeinit5_shutdown.exe
+	usr/bin/kdeinit5_wrapper.exe
+	usr/bin/kshell5.exe
+	usr/bin/kwrapper5.exe
+	usr/libexec/kf5/klauncher.exe
+	usr/libexec/kf5/start_kdeinit.exe
+	usr/libexec/kf5/start_kdeinit_wrapper.exe
+	usr/share/doc/
+	usr/share/locale/
+	usr/share/man/
+"
+kf5_kinit_devel_REQUIRES=${NAME}
+kf5_kinit_devel_CONTENTS="
+	usr/lib/cmake/KF5Init/
+	usr/share/dbus-1/interfaces/kf5_org.kde.KLauncher.xml
+"

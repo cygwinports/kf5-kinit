@@ -1,19 +1,17 @@
---- origsrc/kinit-5.10.0/src/kdeinit/kinit.cpp	2015-05-03 10:14:51.000000000 -0500
-+++ src/kinit-5.10.0/src/kdeinit/kinit.cpp	2015-05-17 17:02:29.631834600 -0500
-@@ -91,6 +91,12 @@ static const char *extra_libs[] = {
+--- origsrc/kinit-5.27.0/src/kdeinit/kinit.cpp	2016-10-02 04:52:57.000000000 -0500
++++ src/kinit-5.27.0/src/kdeinit/kinit.cpp	2016-11-02 00:14:49.671940400 -0500
+@@ -95,6 +95,10 @@ static const char *extra_libs[] = {
+     "libKF5KIOCore.5.dylib",
      "libKF5Parts.5.dylib",
      "libKF5Plasma.5.dylib"
- };
 +#elif defined(Q_OS_CYGWIN)
-+static const char *extra_libs[] = {
 +    "cygKF5KIOCore-5.dll",
 +    "cygKF5Parts-5.dll",
 +    "cygKF5Plasma-5.dll"
-+};
  #else
- //TODO: make sure what libraries we want here...
- static const char *extra_libs[] = {
-@@ -486,7 +492,11 @@ static pid_t launch(int argc, const char
+     "libKF5KIOCore.so.5",
+     "libKF5Parts.so.5",
+@@ -461,7 +465,11 @@ static pid_t launch(int argc, const char
      if (_name[0] != '/') {
          name = _name;
          lib = QFile::decodeName(name);
@@ -25,7 +23,7 @@
          libpath_relative = true;
          execpath = execpath_avoid_loops(name, envc, envs, avoid_loops);
      } else {
-@@ -495,7 +505,7 @@ static pid_t launch(int argc, const char
+@@ -470,7 +478,7 @@ static pid_t launch(int argc, const char
          name = name.mid(name.lastIndexOf('/') + 1);
  
          // FIXME: this .so extension stuff is very Linux-specific
@@ -34,7 +32,7 @@
              libpath = lib;
          } else {
              execpath = _name;
-@@ -507,6 +517,15 @@ static pid_t launch(int argc, const char
+@@ -482,6 +490,15 @@ static pid_t launch(int argc, const char
              // the install prefix, although this may not be the case if the user
              // has overridden them, and so this search is inherently fragile in
              // the face of unusual installation layouts.
@@ -50,7 +48,7 @@
              if (lib.contains(QLatin1String(KF5_LIBEXEC_INSTALL_DIR))) {
                  libpath = QString(lib).replace(QLatin1String(KF5_LIBEXEC_INSTALL_DIR),
                                                 QLatin1String(LIB_INSTALL_DIR "/libkdeinit5_")) + QLatin1String(".so");
-@@ -514,6 +533,7 @@ static pid_t launch(int argc, const char
+@@ -489,6 +506,7 @@ static pid_t launch(int argc, const char
                  libpath = QString(lib).replace(QLatin1String("/bin/"),
                                                 QLatin1String(LIB_INSTALL_DIR "/libkdeinit5_")) + QLatin1String(".so");
              }
